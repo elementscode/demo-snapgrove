@@ -1,0 +1,76 @@
+import "./style.css";
+import { LiveView, File, redirect } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { createPost, PostForm, MAX_CAPTION } from "#app/shared/services/uploads";
+import { previewUrl } from "#app/shared/services/preview";
+import { Layout } from "#app/shared/templates/layout";
+import { Icon } from "#app/shared/templates/icon";
+
+interface Compose {
+  form: PostForm;
+  error: string;
+  busy: boolean;
+}
+
+function onSubmit(state: Compose) {
+  if (!state.form.photo) {
+    state.error = "choose a photo to share";
+    return;
+  }
+
+  state.busy = true;
+  state.error = "";
+
+  try {
+    let id = createPost(state.form);
+    redirect(`/p/${id}`);
+  } catch (err: any) {
+    state.error = err.message;
+    state.busy = false;
+  }
+}
+
+<html lang="en" class="page-new-post" (
+  me: Me,
+  notes: LiveView<Note>,
+  private state: Compose = { form: { caption: "" }, error: "", busy: false },
+)>
+  <head>
+    <title>New post · snapgrove</title>
+    <meta name="description" content="Share a photo on snapgrove.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes} active="new">
+      <form class="compose stack is-lg" onsubmit={() => onSubmit(state)}>
+        <h1 class="text-2xl">New post</h1>
+
+        <p e:if={state.error} class="callout is-danger" role="alert">{state.error}</p>
+
+        <label class={["compose-drop", previewUrl(state.form.photo) && "has-photo"]}>
+          <img e:if={previewUrl(state.form.photo)} src={previewUrl(state.form.photo)} alt="your photo" width="600" height="600">
+
+          <span e:if={!previewUrl(state.form.photo)} class="compose-prompt">
+            <Icon name="camera" size={44}/>
+            <strong>Choose a photo</strong>
+            <span class="text-sm">PNG, JPEG, GIF or WebP, up to 8 MB. It is shown square.</span>
+          </span>
+
+          <span e:else class="compose-change button is-sm">Change photo</span>
+
+          <input type="file" name="photo" accept="image/png,image/jpeg,image/gif,image/webp" value={state.form.photo} aria-label="photo">
+        </label>
+
+        <div class="field">
+          <label for="caption">Caption</label>
+          <textarea id="caption" name="caption" rows={3} maxlength={MAX_CAPTION} value={state.form.caption} placeholder="Say something about it…"></textarea>
+          <div class="compose-count">{state.form.caption.length} / {MAX_CAPTION}</div>
+        </div>
+
+        <button type="submit" class={["is-primary is-lg is-block", state.busy && "is-loading"]} disabled={!state.form.photo}>Share</button>
+      </form>
+    </Layout>
+  </body>
+</html>

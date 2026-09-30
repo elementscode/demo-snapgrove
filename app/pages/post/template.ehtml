@@ -1,0 +1,156 @@
+import "./style.css";
+import { LiveView, redirect } from "@elements/app";
+import type { Listener } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { Post, PostStats, deletePost } from "#app/shared/services/posts";
+import { Comment, MAX_COMMENT } from "./services";
+import { timeAgo, plural } from "#app/shared/services/format";
+import { Layout } from "#app/shared/templates/layout";
+import { Avatar } from "#app/shared/templates/avatar";
+import { LikeButton, PostPhoto, applyStats } from "#app/shared/templates/post-card";
+import { PostGrid } from "#app/shared/templates/post-grid";
+
+interface Draft {
+  body: string;
+  error: string;
+}
+
+function onCommentSubmit(me: Me, thread: LiveView<Comment>, draft: Draft) {
+  let body = draft.body.trim();
+  if (!body) {
+    return;
+  }
+
+  draft.error = "";
+
+  try {
+    thread.insert(
+      {
+        body,
+        userId: me.id,
+        handle: me.handle,
+        name: me.name,
+        avatarUrl: me.avatarUrl,
+        createdAt: new Date(),
+      },
+      () => draft.body = "",
+    );
+  } catch (err: any) {
+    draft.error = err.message;
+  }
+}
+
+/** A comment that arrives while the page is open slides in and scrolls into view. */
+function onCommentInsert(el: Element) {
+  if (performance.now() < 2000) {
+    return;
+  }
+
+  el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  el.animate(
+    [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }],
+    { duration: 320, easing: "ease-out" },
+  );
+}
+
+function canDelete(c: Comment, me: Me, post: Post): boolean {
+  return c.userId === me.id || post.userId === me.id;
+}
+
+function onDeleteClick(post: Post) {
+  if (!confirm("Delete this post? This can't be undone.")) {
+    return;
+  }
+
+  deletePost(post.id);
+  redirect(`/u/${post.handle}`);
+}
+
+<Thread (post: Post, me: Me, thread: LiveView<Comment>)>
+  <ul class="post-thread stack is-md">
+    <li e:if={post.caption} class="comment">
+      <a href={`/u/${post.handle}`} aria-hidden="true" tabindex={-1}><Avatar user={post} size={32}/></a>
+      <div class="comment-text">
+        <a href={`/u/${post.handle}`}>{post.handle}</a>{post.caption}
+        <div class="comment-meta"><span>{timeAgo(post.createdAt)}</span></div>
+      </div>
+    </li>
+
+    <li e:for={c of thread} class="comment" oninsert={(e) => onCommentInsert(e.target)}>
+      <a href={`/u/${c.handle}`} aria-hidden="true" tabindex={-1}><Avatar user={c} size={32}/></a>
+      <div class="comment-text">
+        <a href={`/u/${c.handle}`}>{c.handle}</a>{c.body}
+        <div class="comment-meta">
+          <span>{timeAgo(c.createdAt)}</span>
+          <button e:if={canDelete(c, me, post)} type="button" class="is-bare" onclick={() => thread.delete(c)}>Delete</button>
+        </div>
+      </div>
+    </li>
+
+    <li e:if={thread.length === 0} class="post-empty-thread">No comments yet. Start the conversation.</li>
+  </ul>
+</Thread>
+
+<html lang="en" class="page-post" (
+  me: Me,
+  notes: LiveView<Note>,
+  stats: Listener<PostStats>,
+  post: Post,
+  thread: LiveView<Comment>,
+  more: Post[],
+  private draft: Draft = { body: "", error: "" },
+) oninit={() => stats.on("notify", (s) => applyStats([post, ...more], s))}>
+  <head>
+    <title>{post.caption ? `${post.handle}: ${post.caption}` : `Photo by ${post.handle}`} · snapgrove</title>
+    <meta name="description" content={post.caption || `A photo by ${post.handle} on snapgrove.`}>
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes}>
+      <div class="post-page">
+        <article class="post-view">
+          <PostPhoto {post}/>
+
+          <div class="post-side">
+            <header class="post-head">
+              <a href={`/u/${post.handle}`} aria-hidden="true" tabindex={-1}><Avatar user={post} size={36}/></a>
+              <div class="post-who">
+                <a class="post-handle" href={`/u/${post.handle}`}>{post.handle}</a>
+                <span class="post-name">{post.name}</span>
+              </div>
+              <button e:if={post.userId === me.id} type="button" class="is-ghost is-sm post-time" onclick={() => onDeleteClick(post)}>Delete</button>
+            </header>
+
+            <Thread {post} {me} {thread}/>
+
+            <div class="post-side-foot stack is-xs">
+              <div class="post-actions">
+                <LikeButton {post}/>
+              </div>
+              <div class="post-likes">{plural(post.likeCount, "like")} · {plural(post.commentCount, "comment")}</div>
+              <div class="post-name">{timeAgo(post.createdAt)}</div>
+            </div>
+
+            <form class="comment-form" onsubmit={() => onCommentSubmit(me, thread, draft)}>
+              <input value={draft.body}
+                     name="comment"
+                     aria-label="Add a comment"
+                     placeholder="Add a comment…"
+                     maxlength={MAX_COMMENT}
+                     autocomplete="off">
+              <button type="submit" class="is-primary" disabled={draft.body.trim() === ""}>Post</button>
+            </form>
+            <p e:if={draft.error} class="hint is-error" role="alert">{draft.error}</p>
+          </div>
+        </article>
+
+        <section e:if={more.length > 0}>
+          <h2 class="post-more-head">More from <a href={`/u/${post.handle}`}>{post.handle}</a></h2>
+          <PostGrid posts={more}/>
+        </section>
+      </div>
+    </Layout>
+  </body>
+</html>
