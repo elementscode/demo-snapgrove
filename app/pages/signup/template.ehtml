@@ -1,0 +1,122 @@
+import "./style.css";
+import { redirect, ValidationError } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { signup, MIN_PASSWORD, SignupForm } from "#app/shared/services/auth";
+import { SEED, MOSAIC } from "#app/shared/services/photos";
+import { Logo } from "#app/shared/templates/layout";
+
+interface SignupState {
+  form: SignupForm;
+  errors: Record<string, string[]>;
+  error: string;
+  busy: boolean;
+}
+
+function onSubmit(state: SignupState) {
+  state.busy = true;
+
+  try {
+    signup(state.form);
+    state.errors = {};
+    state.error = "";
+    redirect("/settings");
+  } catch (err: any) {
+    state.busy = false;
+
+    if (err instanceof ValidationError && typeof err.errors === "object") {
+      state.errors = err.errors as Record<string, string[]>;
+      state.error = "";
+    } else {
+      state.error = err.message;
+    }
+  }
+}
+
+<html lang="en" class="page-signup" (
+  private state: SignupState = {
+    form: { handle: "", name: "", email: "", password: "" },
+    errors: {},
+    error: "",
+    busy: false,
+  },
+)>
+  <head>
+    <title>Create an account · snapgrove</title>
+    <meta name="description" content="Create a snapgrove account.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <div class="auth">
+      <div class="auth-mosaic" aria-hidden="true">
+        <img e:for={key of MOSAIC.slice().reverse()} src={SEED[key]} alt="" width="300" height="300">
+        <div class="auth-tagline">
+          <h2>Start your grove.</h2>
+          <p>Post a photo, follow a few people, and your feed fills itself.</p>
+        </div>
+      </div>
+
+      <main class="auth-panel">
+        <div class="auth-card stack is-lg">
+          <div class="auth-brand"><Logo size={32}/> snapgrove</div>
+
+          <form class="stack" onsubmit={() => onSubmit(state)}>
+            <h1 class="text-2xl">Create your account</h1>
+
+            <p e:if={state.error} class="callout is-danger" role="alert">{state.error}</p>
+
+            <div class="field">
+              <label for="handle">Handle</label>
+              <input id="handle"
+                     name="handle"
+                     value={state.form.handle}
+                     class={[state.errors.handle && "is-error"]}
+                     autocomplete="username"
+                     autocapitalize="none"
+                     spellcheck={false}
+                     placeholder="yourname"
+                     required>
+              <p e:if={state.errors.handle} class="hint is-error">{state.errors.handle?.[0]}</p>
+            </div>
+
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" value={state.form.name} autocomplete="name" placeholder="Your Name">
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email"
+                     name="email"
+                     type="email"
+                     value={state.form.email}
+                     class={[state.errors.email && "is-error"]}
+                     autocomplete="email"
+                     autocapitalize="none"
+                     spellcheck={false}
+                     placeholder="you@example.com"
+                     required>
+              <p e:if={state.errors.email} class="hint is-error">{state.errors.email?.[0]}</p>
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password"
+                     name="password"
+                     type="password"
+                     value={state.form.password}
+                     class={[state.errors.password && "is-error"]}
+                     autocomplete="new-password"
+                     minlength={MIN_PASSWORD}
+                     required>
+              <p class={["hint", state.errors.password && "is-error"]}>at least {MIN_PASSWORD} characters</p>
+            </div>
+
+            <button type="submit" class={["is-primary is-block", state.busy && "is-loading"]}>Create account</button>
+          </form>
+
+          <p class="auth-alt">Have an account? <a href="/signin">Sign in</a></p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+import "./style.css";
+import { LiveView } from "@elements/app";
+import type { Listener } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { Post, PostStats } from "#app/shared/services/posts";
+import { Layout } from "#app/shared/templates/layout";
+import { Avatar, AvatarUser } from "#app/shared/templates/avatar";
+import { PostGrid } from "#app/shared/templates/post-grid";
+import { applyStats } from "#app/shared/templates/post-card";
+
+export interface Person extends AvatarUser {
+  id: string;
+  handle: string;
+  name: string;
+}
+
+<html lang="en" class="page-explore" (
+  me: Me,
+  notes: LiveView<Note>,
+  stats: Listener<PostStats>,
+  posts: Post[],
+  people: Person[],
+) oninit={() => stats.on("notify", (s) => applyStats(posts, s))}>
+  <head>
+    <title>Explore · snapgrove</title>
+    <meta name="description" content="Popular recent photos on snapgrove.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes} active="explore">
+      <div class="explore stack is-lg">
+        <div class="explore-head">
+          <h1 class="text-2xl">Explore</h1>
+          <p>The most liked and talked-about photos from the last two weeks.</p>
+        </div>
+
+        <ul e:if={people.length > 0} class="explore-people" aria-label="people">
+          <li e:for={u of people}>
+            <a class="explore-person" href={`/u/${u.handle}`}>
+              <Avatar user={u} size={60}/>
+              <span>{u.handle}</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="explore-grid">
+          <PostGrid {posts}/>
+        </div>
+
+        <p e:if={posts.length === 0} class="text-ink-soft">Nothing posted in the last two weeks yet.</p>
+      </div>
+    </Layout>
+  </body>
+</html>

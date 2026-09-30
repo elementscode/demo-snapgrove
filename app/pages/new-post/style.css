@@ -1,0 +1,78 @@
+@import "#app/shared/styles/page.css";
+
+.compose {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.compose-drop {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border: 2px dashed var(--rule-strong);
+  border-radius: var(--radius-xl);
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  cursor: pointer;
+  overflow: hidden;
+  transition: var(--transition-colors);
+}
+
+.compose-drop:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.compose-drop.has-photo {
+  border-style: solid;
+  border-color: var(--rule-soft);
+}
+
+.compose-drop img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compose-drop input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.compose-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+  pointer-events: none;
+}
+
+.compose-prompt strong {
+  color: var(--ink);
+}
+
+.compose-change {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  pointer-events: none;
+}
+
+.compose-count {
+  font-size: var(--text-xs);
+  color: var(--ink-dim);
+  text-align: right;
+}
+
+.compose-drop .compose-change {
+  background: var(--bg);
+  border-color: var(--bg);
+  box-shadow: var(--shadow-md);
+}

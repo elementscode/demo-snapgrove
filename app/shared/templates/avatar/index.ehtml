@@ -1,0 +1,25 @@
+import "./style.css";
+import { avatarUrl, AvatarRef } from "#app/shared/services/photos";
+
+export interface AvatarUser extends AvatarRef {
+  handle: string;
+  name?: string;
+  avatarUrl?: string;
+}
+
+function initial(u: AvatarUser): string {
+  return (u.name || u.handle || "?").charAt(0).toUpperCase();
+}
+
+<Avatar (user: AvatarUser, size: number = 32)>
+  <span class="avatar"
+        style={`width:${size}px;height:${size}px;font-size:${Math.round(size * 0.42)}px`}>
+    <img e:if={user.avatarUrl || avatarUrl(user)}
+         src={user.avatarUrl || avatarUrl(user)}
+         alt=""
+         width={size}
+         height={size}
+         loading="lazy">
+    <span e:else aria-hidden="true">{initial(user)}</span>
+  </span>
+</Avatar>

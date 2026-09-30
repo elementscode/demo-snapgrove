@@ -1,0 +1,30 @@
+import "./style.css";
+
+export type IconName = "home" | "compass" | "plus" | "bell" | "heart" | "comment" | "grid" | "back" | "camera" | "logout";
+
+// Stroke icons on a 24px grid. `filled` fills the heart for a liked post.
+<Icon (name: IconName, size: number = 24, filled: boolean = false)>
+  <svg class="icon"
+       width={size}
+       height={size}
+       viewBox="0 0 24 24"
+       fill={filled ? "currentColor" : "none"}
+       stroke="currentColor"
+       stroke-width="1.9"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       aria-hidden="true">
+    <g e:switch={name}>
+      <path e:case="home" d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>
+      <g e:case="compass"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></g>
+      <g e:case="plus"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8M8 12h8"/></g>
+      <g e:case="bell"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></g>
+      <path e:case="heart" d="M12 20s-7.5-4.6-9.2-9.3C1.7 7.6 3.8 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.2 0 5.3 3.1 4.2 6.2C19.5 15.4 12 20 12 20z"/>
+      <path e:case="comment" d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.6L3.5 20.5l1.4-4.4A8.5 8.5 0 1 1 20.5 11.5z"/>
+      <g e:case="grid"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></g>
+      <path e:case="back" d="M15 5l-7 7 7 7"/>
+      <g e:case="camera"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></g>
+      <g e:case="logout"><path d="M14 4h5v16h-5"/><path d="M10 8l-4 4 4 4M6 12h10"/></g>
+    </g>
+  </svg>
+</Icon>

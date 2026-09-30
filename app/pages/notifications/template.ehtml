@@ -1,0 +1,97 @@
+import "./style.css";
+import { LiveView } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me } from "#app/shared/services/auth";
+import { Note, markAllRead } from "#app/shared/services/notifications";
+import { photoUrl } from "#app/shared/services/photos";
+import { timeAgo } from "#app/shared/services/format";
+import { Layout } from "#app/shared/templates/layout";
+import { Icon } from "#app/shared/templates/icon";
+import { Avatar } from "#app/shared/templates/avatar";
+
+function href(n: Note): string {
+  return n.kind === "follow" ? `/u/${n.handle}` : `/p/${n.postId}`;
+}
+
+function verb(n: Note): string {
+  switch (n.kind) {
+    case "like":
+      return "liked your photo.";
+
+    case "comment":
+      return "commented:";
+
+    default:
+      return "started following you.";
+  }
+}
+
+/**
+ * Unread rows stay highlighted for a moment so they can be found, then the
+ * page marks them read. New ones arriving while it is open do the same.
+ */
+function onNoteInsert(notes: LiveView<Note>, timer: { id: number }) {
+  clearTimeout(timer.id);
+
+  if (notes.filter((n) => !n.readAt).length === 0) {
+    return;
+  }
+
+  timer.id = setTimeout(() => markAllRead(), 2500) as unknown as number;
+}
+
+<NoteBody (n: Note)>
+    <a class="note-avatar" href={`/u/${n.handle}`} aria-hidden="true" tabindex={-1}>
+      <Avatar user={n} size={44}/>
+      <span class={["note-kind", `is-${n.kind}`]}>
+        <Icon e:if={n.kind === "like"} name="heart" size={11} filled={true}/>
+        <Icon e:elseif={n.kind === "comment"} name="comment" size={11} filled={true}/>
+        <Icon e:else name="plus" size={11}/>
+      </span>
+    </a>
+
+    <a class="note-text" href={href(n)}>
+      <strong>{n.handle}</strong> {verb(n)}
+      <span class="note-time">{timeAgo(n.createdAt)}</span>
+      <span e:if={n.kind === "comment" && n.commentBody} class="note-quote">{n.commentBody}</span>
+    </a>
+
+    <a e:if={n.postId} class="note-thumb" href={href(n)} aria-hidden="true" tabindex={-1}>
+      <img src={photoUrl(n)} alt="" width="44" height="44" loading="lazy">
+    </a>
+</NoteBody>
+
+<html lang="en" class="page-notifications" (
+  me: Me,
+  notes: LiveView<Note>,
+  private timer: { id: number } = { id: 0 },
+)>
+  <head>
+    <title>Notifications · snapgrove</title>
+    <meta name="description" content="Your snapgrove notifications.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes} active="notifications">
+      <div class="notes stack is-lg">
+        <h1 class="text-2xl">Notifications</h1>
+
+        <ul e:if={notes.length > 0} class="notes-list">
+          <li e:for={n of notes}
+              class={["note", !n.readAt && "is-unread"]}
+              oninsert={() => onNoteInsert(notes, timer)}>
+            <NoteBody {n}/>
+          </li>
+        </ul>
+
+        <p e:else class="notes-empty">
+          Nothing yet. When someone follows you, or likes or comments on your photos, it shows up here.
+        </p>
+
+        <div e:if={notes.hasMore} class="notes-more">
+          <button type="button" onclick={() => notes.more()}>Show older</button>
+        </div>
+      </div>
+    </Layout>
+  </body>
+</html>

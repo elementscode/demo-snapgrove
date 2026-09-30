@@ -1,0 +1,93 @@
+import "./style.css";
+import { Post, PostStats, setLiked } from "#app/shared/services/posts";
+import { photoUrl } from "#app/shared/services/photos";
+import { timeAgo, plural } from "#app/shared/services/format";
+import { Icon } from "#app/shared/templates/icon";
+import { Avatar } from "#app/shared/templates/avatar";
+
+/** Writes a broadcast's counts into whichever loaded post it names. */
+export function applyStats(posts: Iterable<Post>, s: PostStats) {
+  for (let p of posts) {
+    if (p.id === s.postId) {
+      p.likeCount = s.likeCount;
+      p.commentCount = s.commentCount;
+    }
+  }
+}
+
+export function onLikeClick(post: Post) {
+  let liked = !post.likedByMe;
+
+  post.likedByMe = liked;
+  post.likeCount = Math.max(0, post.likeCount + (liked ? 1 : -1));
+
+  try {
+    let s = setLiked(post.id, liked);
+    post.likeCount = s.likeCount;
+    post.commentCount = s.commentCount;
+  } catch (err) {
+    post.likedByMe = !liked;
+    post.likeCount = Math.max(0, post.likeCount + (liked ? -1 : 1));
+  }
+}
+
+function onPhotoDblClick(post: Post, burst: { n: number }) {
+  burst.n++;
+
+  if (!post.likedByMe) {
+    onLikeClick(post);
+  }
+}
+
+<LikeButton (post: Post, size: number = 26)>
+  <button type="button"
+          class={["is-ghost is-icon post-action like-button", post.likedByMe && "is-liked"]}
+          aria-pressed={post.likedByMe}
+          aria-label={post.likedByMe ? "unlike" : "like"}
+          onclick={() => onLikeClick(post)}>
+    <Icon name="heart" size={size} filled={post.likedByMe}/>
+  </button>
+</LikeButton>
+
+<PostPhoto (post: Post, private burst: { n: number } = { n: 0 })>
+  <div class="post-photo" ondblclick={() => onPhotoDblClick(post, burst)}>
+    <img src={photoUrl(post)} alt={post.caption || `photo by ${post.handle}`} width="600" height="600" loading="lazy">
+    <div e:for={n of burst.n > 0 ? [{ id: String(burst.n) }] : []} class="post-burst">
+      <Icon name="heart" size={96} filled={true}/>
+    </div>
+  </div>
+</PostPhoto>
+
+<PostCard (post: Post)>
+  <article class="post-card">
+    <header class="post-head">
+      <a href={`/u/${post.handle}`} aria-hidden="true" tabindex={-1}><Avatar user={post} size={36}/></a>
+      <div class="post-who">
+        <a class="post-handle" href={`/u/${post.handle}`}>{post.handle}</a>
+        <span class="post-name">{post.name}</span>
+      </div>
+      <a class="post-time" href={`/p/${post.id}`}>{timeAgo(post.createdAt)}</a>
+    </header>
+
+    <PostPhoto {post}/>
+
+    <div class="post-body stack is-xs">
+      <div class="post-actions">
+        <LikeButton {post}/>
+        <a class="button is-ghost is-icon post-action" href={`/p/${post.id}`} aria-label="comments">
+          <Icon name="comment" size={25}/>
+        </a>
+      </div>
+
+      <div class="post-likes">{plural(post.likeCount, "like")}</div>
+
+      <p e:if={post.caption} class="post-caption">
+        <a href={`/u/${post.handle}`}>{post.handle}</a>{post.caption}
+      </p>
+
+      <a e:if={post.commentCount > 0} class="post-comments-link" href={`/p/${post.id}`}>
+        {post.commentCount === 1 ? "View 1 comment" : `View all ${post.commentCount} comments`}
+      </a>
+    </div>
+  </article>
+</PostCard>

@@ -1,0 +1,58 @@
+import "./style.css";
+import { LiveView } from "@elements/app";
+import type { Listener } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { PostStats } from "#app/shared/services/posts";
+import { FeedPost } from "./services";
+import { Layout } from "#app/shared/templates/layout";
+import { PostCard, applyStats } from "#app/shared/templates/post-card";
+
+function onSentinelInsert(el: Element, posts: LiveView<FeedPost>) {
+  let observer = new IntersectionObserver((entries) => {
+    if (entries[0]?.isIntersecting) {
+      posts.more();
+    }
+  }, { rootMargin: "600px 0px" });
+
+  observer.observe(el);
+}
+
+<html lang="en" class="page-home" (
+  me: Me,
+  notes: LiveView<Note>,
+  posts: LiveView<FeedPost>,
+  stats: Listener<PostStats>,
+) oninit={() => stats.on("notify", (s) => applyStats(posts, s))}>
+  <head>
+    <title>snapgrove</title>
+    <meta name="description" content="Your snapgrove feed.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes} active="home">
+      <div class="feed-shell">
+        <ul e:if={posts.length > 0} class="feed-list stack is-lg">
+          <li e:for={p of posts}>
+            <PostCard post={p}/>
+          </li>
+        </ul>
+
+        <div e:else class="feed-empty stack">
+          <h1 class="text-2xl">Your feed is quiet</h1>
+          <p class="text-ink-soft">Follow a few people and their photos land here, newest first.</p>
+          <p><a class="button is-primary" href="/explore">Explore popular posts</a></p>
+        </div>
+
+        <div e:if={posts.hasMore}
+             class="feed-loading"
+             oninsert={(e) => onSentinelInsert(e.target, posts)}>
+          <span class="feed-spinner" aria-label="loading more posts"></span>
+        </div>
+
+        <p e:elseif={posts.length > 0} class="feed-end">You're all caught up.</p>
+      </div>
+    </Layout>
+  </body>
+</html>

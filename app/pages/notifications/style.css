@@ -1,0 +1,122 @@
+@import "#app/shared/styles/page.css";
+
+.notes {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--rule-soft);
+  transition: background-color var(--duration-slower) var(--ease-out);
+}
+
+.note:last-child {
+  border-bottom: 0;
+}
+
+.note.is-unread {
+  background: var(--accent-soft);
+}
+
+.note-avatar {
+  position: relative;
+  flex: none;
+}
+
+.note-kind {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+.note-kind.is-like {
+  background: var(--danger);
+}
+
+.note-kind.is-comment {
+  background: var(--accent);
+}
+
+.note-kind.is-follow {
+  background: var(--ink);
+}
+
+.note-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.note-text:hover {
+  color: var(--ink);
+}
+
+.note-text strong {
+  font-weight: var(--weight-semibold);
+}
+
+.note-quote {
+  display: block;
+  color: var(--ink-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-time {
+  color: var(--ink-dim);
+  margin-left: var(--space-1);
+}
+
+.note-thumb {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-muted);
+}
+
+.note-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.notes-more {
+  display: flex;
+  justify-content: center;
+}
+
+.notes-empty {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: var(--space-12) var(--space-4);
+}
+
