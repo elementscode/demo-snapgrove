@@ -1,0 +1,44 @@
+@import "#app/shared/styles/page.css";
+
+.feed-shell {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
+.feed-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feed-end {
+  text-align: center;
+  color: var(--ink-dim);
+  font-size: var(--text-sm);
+  padding: var(--space-6) 0;
+}
+
+.feed-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) 0;
+}
+
+.feed-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--rule);
+  border-top-color: var(--accent);
+  animation: feed-spin 800ms linear infinite;
+}
+
+@keyframes feed-spin {
+  to { transform: rotate(360deg); }
+}
+
+.feed-empty {
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+}

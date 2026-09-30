@@ -1,0 +1,60 @@
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.post-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+}
+
+.post-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.post-tile-stats {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  color: #fff;
+  font-weight: var(--weight-bold);
+  background: rgb(0 0 0 / 0.38);
+  opacity: 0;
+  transition: var(--transition-opacity);
+}
+
+.post-tile-stats span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1-5);
+}
+
+.post-tile:hover .post-tile-stats,
+.post-tile:focus-visible .post-tile-stats {
+  opacity: 1;
+}
+
+.post-tile:hover img {
+  transform: scale(1.03);
+}
+
+@media (min-width: 48rem) {
+  .post-grid {
+    gap: var(--space-1-5);
+  }
+}

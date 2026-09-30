@@ -1,0 +1,121 @@
+import "./style.css";
+import { redirect } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { signin, DEMO_PASSWORD } from "#app/shared/services/auth";
+import { SEED, MOSAIC } from "#app/shared/services/photos";
+import { Logo } from "#app/shared/templates/layout";
+import { Avatar } from "#app/shared/templates/avatar";
+
+export interface DemoAccount {
+  id: string;
+  handle: string;
+  name: string;
+  email: string;
+  avatarSeed: string | null;
+}
+
+interface SigninForm {
+  login: string;
+  password: string;
+  error: string;
+  busy: boolean;
+}
+
+function onSubmit(form: SigninForm) {
+  form.busy = true;
+
+  try {
+    signin(form.login, form.password);
+    form.error = "";
+    redirect("/");
+  } catch (err: any) {
+    form.error = err.message;
+    form.busy = false;
+  }
+}
+
+function onDemoClick(form: SigninForm, account: DemoAccount) {
+  form.login = account.email;
+  form.password = DEMO_PASSWORD;
+  onSubmit(form);
+}
+
+<html lang="en" class="page-signin" (
+  demo: DemoAccount[],
+  private form: SigninForm = { login: "", password: "", error: "", busy: false },
+)>
+  <head>
+    <title>Sign in · snapgrove</title>
+    <meta name="description" content="Sign in to snapgrove, a place to share photos with people you follow.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <div class="auth">
+      <div class="auth-mosaic" aria-hidden="true">
+        <img e:for={key of MOSAIC} src={SEED[key]} alt="" width="300" height="300">
+        <div class="auth-tagline">
+          <h2>Share the view.</h2>
+          <p>Photos from the people you follow, the moment they post them.</p>
+        </div>
+      </div>
+
+      <main class="auth-panel">
+        <div class="auth-card stack is-lg">
+          <div class="auth-brand"><Logo size={32}/> snapgrove</div>
+
+          <form class="stack" onsubmit={() => onSubmit(form)}>
+            <h1 class="text-2xl">Welcome back</h1>
+
+            <p e:if={form.error} class="callout is-danger" role="alert">{form.error}</p>
+
+            <div class="field">
+              <label for="login">Email or handle</label>
+              <input id="login"
+                     name="login"
+                     type="text"
+                     value={form.login}
+                     autocomplete="username"
+                     autocapitalize="none"
+                     spellcheck={false}
+                     placeholder="maya@snapgrove.dev"
+                     required>
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password"
+                     name="password"
+                     type="password"
+                     value={form.password}
+                     autocomplete="current-password"
+                     required>
+            </div>
+
+            <button type="submit" class={["is-primary is-block", form.busy && "is-loading"]}>Sign in</button>
+          </form>
+
+          <section e:if={demo.length > 0} class="auth-demo stack is-sm">
+            <div class="auth-demo-head">
+              <h2>Demo accounts</h2>
+              <p>password <code>{DEMO_PASSWORD}</code></p>
+            </div>
+
+            <ul class="auth-demo-list">
+              <li e:for={a of demo}>
+                <button type="button" title={`Sign in as ${a.email}`} onclick={() => onDemoClick(form, a)}>
+                  <Avatar user={a} size={30}/>
+                  <span class="auth-demo-who">
+                    <strong>{a.name}</strong>
+                    <small>{a.email}</small>
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </section>
+
+          <p class="auth-alt">New here? <a href="/signup">Create an account</a></p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

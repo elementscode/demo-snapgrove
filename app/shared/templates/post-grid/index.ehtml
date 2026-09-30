@@ -1,0 +1,18 @@
+import "./style.css";
+import { Post } from "#app/shared/services/posts";
+import { photoUrl } from "#app/shared/services/photos";
+import { Icon } from "#app/shared/templates/icon";
+
+<PostGrid (posts: Post[])>
+  <ul class="post-grid">
+    <li e:for={p of posts}>
+      <a class="post-tile" href={`/p/${p.id}`} aria-label={`${p.handle}: ${p.caption}`}>
+        <img src={photoUrl(p)} alt="" width="300" height="300" loading="lazy">
+        <div class="post-tile-stats" aria-hidden="true">
+          <span><Icon name="heart" size={20} filled={true}/>{p.likeCount}</span>
+          <span><Icon name="comment" size={20} filled={true}/>{p.commentCount}</span>
+        </div>
+      </a>
+    </li>
+  </ul>
+</PostGrid>

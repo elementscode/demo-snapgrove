@@ -1,0 +1,114 @@
+.layout-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.layout-bar {
+  max-width: 60rem;
+  margin: 0 auto;
+  height: 3.75rem;
+  padding: 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.layout-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.layout-brand:hover {
+  color: var(--ink);
+}
+
+.layout-mark {
+  color: var(--accent);
+}
+
+.layout-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.layout-link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-lg);
+  color: var(--ink-soft);
+  transition: var(--transition-colors);
+}
+
+.layout-link:hover {
+  color: var(--ink);
+  background: var(--bg-soft);
+}
+
+.layout-link.is-active {
+  color: var(--accent);
+}
+
+.layout-badge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.2rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: var(--radius-full);
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: var(--weight-bold);
+  line-height: 1.15rem;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--bg);
+  animation: layout-pop var(--duration-normal) var(--ease-spring);
+}
+
+@keyframes layout-pop {
+  from { transform: scale(0.4); }
+  to { transform: scale(1); }
+}
+
+.layout-link .avatar {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px transparent;
+}
+
+.layout-link.is-active .avatar {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--accent);
+}
+
+.layout-main {
+  padding-block: var(--space-6) var(--space-16);
+}
+
+@media (max-width: 30rem) {
+  .layout-bar {
+    padding: 0 var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .layout-brand-name {
+    display: none;
+  }
+
+  .layout-nav {
+    gap: 0;
+  }
+}

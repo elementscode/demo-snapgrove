@@ -1,0 +1,59 @@
+import "./style.css";
+import { LiveView } from "@elements/app";
+import { Me } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { Icon } from "#app/shared/templates/icon";
+import { Avatar } from "#app/shared/templates/avatar";
+
+function unread(notes: LiveView<Note>): number {
+  return notes.filter((n) => !n.readAt).length;
+}
+
+function badge(n: number): string {
+  return n > 9 ? "9+" : String(n);
+}
+
+<Logo (size: number = 26)>
+  <svg class="layout-mark" width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
+    <rect x="2" y="2" width="28" height="28" rx="9" fill="currentColor"/>
+    <circle cx="16" cy="17" r="6.5" fill="none" stroke="#fff" stroke-width="2.6"/>
+    <path d="M16 10.5c0-3 1.8-5 5-5.5-.2 3.1-2 5-5 5.5z" fill="#fff"/>
+  </svg>
+</Logo>
+
+<Layout (me: Me, notes: LiveView<Note>, active: string = "")>
+  <header class="layout-header">
+    <div class="layout-bar">
+      <a class="layout-brand" href="/">
+        <Logo/>
+        <span class="layout-brand-name">snapgrove</span>
+      </a>
+
+      <nav class="layout-nav" aria-label="main">
+        <a class={["layout-link", active === "home" && "is-active"]} href="/" aria-label="home" title="Home">
+          <Icon name="home"/>
+        </a>
+        <a class={["layout-link", active === "explore" && "is-active"]} href="/explore" aria-label="explore" title="Explore">
+          <Icon name="compass"/>
+        </a>
+        <a class={["layout-link", active === "new" && "is-active"]} href="/new" aria-label="new post" title="New post">
+          <Icon name="plus"/>
+        </a>
+        <a class={["layout-link", active === "notifications" && "is-active"]}
+           href="/notifications"
+           aria-label={`notifications, ${unread(notes)} unread`}
+           title="Notifications">
+          <Icon name="bell"/>
+          <span e:if={unread(notes) > 0} class="layout-badge">{badge(unread(notes))}</span>
+        </a>
+        <a class={["layout-link", active === "profile" && "is-active"]} href={`/u/${me.handle}`} aria-label="your profile" title="Profile">
+          <Avatar user={me} size={28}/>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="layout-main">
+    <slot/>
+  </main>
+</Layout>

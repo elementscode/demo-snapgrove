@@ -1,0 +1,119 @@
+import "./style.css";
+import { LiveView, redirect } from "@elements/app";
+import type { Listener } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me, signout } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { Post, PostStats } from "#app/shared/services/posts";
+import { setFollowing } from "#app/shared/services/social";
+import { plural } from "#app/shared/services/format";
+import { Layout } from "#app/shared/templates/layout";
+import { Icon } from "#app/shared/templates/icon";
+import { Avatar, AvatarUser } from "#app/shared/templates/avatar";
+import { PostGrid } from "#app/shared/templates/post-grid";
+import { applyStats } from "#app/shared/templates/post-card";
+
+export interface Profile extends AvatarUser {
+  id: string;
+  handle: string;
+  name: string;
+  bio: string;
+  followers: number;
+  following: number;
+  followedByMe: boolean;
+  followsMe: boolean;
+}
+
+function onFollowClick(profile: Profile) {
+  let follow = !profile.followedByMe;
+
+  profile.followedByMe = follow;
+  profile.followers += follow ? 1 : -1;
+
+  try {
+    let counts = setFollowing(profile.id, follow);
+    profile.followers = counts.followers;
+  } catch (err) {
+    profile.followedByMe = !follow;
+    profile.followers += follow ? -1 : 1;
+  }
+}
+
+function onSignoutClick() {
+  signout();
+  redirect("/signin");
+}
+
+function followLabel(profile: Profile): string {
+  if (profile.followedByMe) {
+    return "Following";
+  }
+
+  return profile.followsMe ? "Follow back" : "Follow";
+}
+
+<html lang="en" class="page-profile" (
+  me: Me,
+  notes: LiveView<Note>,
+  stats: Listener<PostStats>,
+  profile: Profile,
+  posts: Post[],
+) oninit={() => stats.on("notify", (s) => applyStats(posts, s))}>
+  <head>
+    <title>{profile.name} (@{profile.handle}) · snapgrove</title>
+    <meta name="description" content={profile.bio || `Photos by ${profile.name} on snapgrove.`}>
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes} active={profile.id === me.id ? "profile" : ""}>
+      <div class="profile">
+        <header class="profile-head">
+          <div class="profile-avatar"><Avatar user={profile} size={150}/></div>
+
+          <div class="stack is-md">
+            <div class="profile-title">
+              <h1>{profile.handle}</h1>
+
+              <div e:if={profile.id === me.id} class="cluster is-sm">
+                <a class="button is-sm" href="/settings">Edit profile</a>
+                <button type="button" class="is-sm is-ghost" onclick={() => onSignoutClick()}>
+                  <Icon name="logout" size={16}/> Sign out
+                </button>
+              </div>
+
+              <button e:else
+                      type="button"
+                      class={["is-sm", !profile.followedByMe && "is-primary"]}
+                      aria-pressed={profile.followedByMe}
+                      onclick={() => onFollowClick(profile)}>
+                {followLabel(profile)}
+              </button>
+            </div>
+
+            <ul class="profile-counts">
+              <li><strong>{posts.length}</strong> {posts.length === 1 ? "post" : "posts"}</li>
+              <li><strong>{profile.followers}</strong> {profile.followers === 1 ? "follower" : "followers"}</li>
+              <li><strong>{profile.following}</strong> following</li>
+            </ul>
+
+            <div class="profile-about stack is-xs">
+              <p class="profile-name">{profile.name}</p>
+              <p e:if={profile.bio} class="profile-bio">{profile.bio}</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="profile-tab"><Icon name="grid" size={14}/> Posts</div>
+
+        <PostGrid e:if={posts.length > 0} {posts}/>
+
+        <div e:elseif={profile.id === me.id} class="profile-empty stack">
+          <p>Share your first photo and it shows up here.</p>
+          <p><a class="button is-primary" href="/new">New post</a></p>
+        </div>
+
+        <p e:else class="profile-empty">{profile.handle} hasn't posted yet.</p>
+      </div>
+    </Layout>
+  </body>
+</html>

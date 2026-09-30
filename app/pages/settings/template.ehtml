@@ -1,0 +1,79 @@
+import "./style.css";
+import { LiveView, redirect } from "@elements/app";
+import favicon from "#app/shared/assets/favicons/favicon.svg";
+import { Me } from "#app/shared/services/auth";
+import { Note } from "#app/shared/services/notifications";
+import { updateProfile, ProfileForm, MAX_BIO } from "#app/shared/services/uploads";
+import { previewUrl } from "#app/shared/services/preview";
+import { Layout } from "#app/shared/templates/layout";
+import { Avatar } from "#app/shared/templates/avatar";
+
+interface Settings {
+  form: ProfileForm;
+  error: string;
+  busy: boolean;
+}
+
+function onSubmit(me: Me, state: Settings) {
+  state.busy = true;
+  state.error = "";
+
+  try {
+    updateProfile(state.form);
+    redirect(`/u/${me.handle}`);
+  } catch (err: any) {
+    state.error = err.message;
+    state.busy = false;
+  }
+}
+
+<html lang="en" class="page-settings" (
+  me: Me,
+  notes: LiveView<Note>,
+  bio: string,
+  private state: Settings = { form: { name: me.name, bio }, error: "", busy: false },
+)>
+  <head>
+    <title>Edit profile · snapgrove</title>
+    <meta name="description" content="Edit your snapgrove profile.">
+    <link rel="icon" type="image/svg+xml" href={favicon} />
+  </head>
+  <body>
+    <Layout {me} {notes} active="profile">
+      <form class="settings stack is-lg" onsubmit={() => onSubmit(me, state)}>
+        <h1 class="text-2xl">Edit profile</h1>
+
+        <p e:if={state.error} class="callout is-danger" role="alert">{state.error}</p>
+
+        <div class="settings-avatar">
+          <img e:if={previewUrl(state.form.avatar)} class="settings-preview" src={previewUrl(state.form.avatar)} alt="new avatar" width="88" height="88">
+          <Avatar e:else user={me} size={88}/>
+
+          <div class="stack is-xs">
+            <strong>@{me.handle}</strong>
+            <span class="button is-sm settings-pick">
+              Change photo
+              <input type="file" name="avatar" accept="image/png,image/jpeg,image/gif,image/webp" value={state.form.avatar} aria-label="profile photo">
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" value={state.form.name} maxlength={60} autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows={3} maxlength={MAX_BIO} value={state.form.bio} placeholder="A line or two about you and what you shoot"></textarea>
+          <p class="hint">{state.form.bio.length} / {MAX_BIO}</p>
+        </div>
+
+        <div class="settings-actions">
+          <a class="button is-ghost" href={`/u/${me.handle}`}>Cancel</a>
+          <button type="submit" class={["is-primary", state.busy && "is-loading"]}>Save</button>
+        </div>
+      </form>
+    </Layout>
+  </body>
+</html>
