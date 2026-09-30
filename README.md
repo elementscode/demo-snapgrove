@@ -1,4 +1,4 @@
-![Snapgrove, a photo sharing app built with Elements: a snowy mountain photo with its comment thread, a comment arriving live, likes, and more photos from the same person.](POSTER_URL)
+![Snapgrove, a photo sharing app built with Elements: a snowy mountain photo with its comment thread, a comment arriving live, likes, and more photos from the same person.](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b/poster?v=7ff91a8af400)
 
 # Snapgrove
 
@@ -6,7 +6,7 @@
 
 Profiles with a grid of photos, follows, a home feed that keeps scrolling, likes and comments that update live, notifications, and an explore page.
 
-**Demo:** [Snapgrove](DEMO_URL)
+**Demo:** [Snapgrove](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b)
 
 ## Agent specs
 
