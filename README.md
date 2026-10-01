@@ -38,7 +38,7 @@ Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes a
 
 ### What the agent got from the tooling
 
-The agent ran 24 builds in 23 minutes, and every one passed. By the build's own timer, the median build finished in under a millisecond, so it checked its work after each edit and kept going. The agent read the manual for each part as it reached it, 47 pages from `recipes/infinite-scroll-feed` and `livetable/windows` to `style/tokens/color`, then wrote 23 tests. In a real browser it signed in two users side by side to watch likes, comments and the badge arrive live, and checked five pages at phone width and the app in dark mode.
+The agent ran 24 builds in 23 minutes, and every one passed. It checked its work after each edit and kept going. The agent read the manual for each part as it reached it, 47 pages from `recipes/infinite-scroll-feed` and `livetable/windows` to `style/tokens/color`, then wrote 23 tests. In a real browser it signed in two users side by side to watch likes, comments and the badge arrive live, and checked five pages at phone width and the app in dark mode.
 
 Start in `app/pages/home/services.ts`.
 
