@@ -30,10 +30,15 @@ Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes a
 ### What Elements gave the app
 
 - **A feed that keeps scrolling.** The home feed is a LiveTable for each reader, read with a keyset window, so it loads six posts at a time as you scroll.
+
 - **Live comments and notifications.** Comments and notifications are LiveTables. A comment appears on every open copy of the post as it is written, and database triggers on likes, comments and follows fill the notification badge.
+
 - **Live counts.** A channel pushes each post's like and comment counts to every page showing it.
+
 - **Photo uploads as function calls.** The new post page sends the photo to an `@rpc` as a `File`, the app stores it in the database, and a route serves each image under its content hash with a year-long cache.
+
 - **Data from SQL files.** Two migrations define the schema and its triggers, then seed eight friends who follow each other, 50 photo posts, 209 likes, 88 comments and a few unread notifications each, with the seed photos shipped as image assets.
+
 - **Sessions.** Every change runs as the signed-in user, so a like or a comment always carries the right name.
 
 ### What the project server gave the agent
