@@ -23,6 +23,25 @@ app.
 elements create snapgrove -scaffold=elementscode/demo-snapgrove
 ```
 
+## How it's built
+
+Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes and comments that show up on every open copy of a post, and a notification badge that fills in on its own. Each of those is a part of Elements, so the agent spent its 23 minutes on the app itself.
+
+### What Elements gave the app
+
+- **A live, paged feed.** `feedPosts` in `app/pages/home/services.ts` is a LiveTable partitioned by viewer. Its select pages with a keyset window, so the home feed loads six posts at a time as you scroll.
+- **Live comments and notifications.** `comments` in `app/pages/post/services.ts` is a LiveTable, so a comment appears on every open copy of the post as it is written. `notifications` in `app/shared/services/notifications.ts` is a LiveTable fed by database triggers on likes, comments and follows, which keeps the badge current.
+- **Live counts.** A `postStats` channel in `app/shared/services/posts.ts` pushes each post's like and comment counts to every page showing it. `setLiked` takes the state the viewer wants, so a double click lands in the same place.
+- **Uploads as function calls.** The new post page calls `createPost` in `app/shared/services/uploads.ts`, an `@rpc` that takes the photo as a `File` and stores it in an `images` table. `app/routes/images.ts` serves each image under its content hash with a year-long cache.
+- **Data from SQL files.** Two migrations define the schema and its triggers, then seed eight friends who follow each other, 50 photo posts, 209 likes, 88 comments and a few unread notifications each. The seed photos are image assets imported in `app/shared/services/photos.ts`.
+- **Sessions.** Every rpc that changes a user's data starts with `session.isLoggedInOrThrow()`, and the author of a comment is always the signed-in user.
+
+### What the agent got from the tooling
+
+The agent ran 24 builds in 23 minutes, and every one passed. By the build's own timer, the median build finished in under a millisecond, so it checked its work after each edit and kept going. The agent read the manual for each part as it reached it, 47 pages from `recipes/infinite-scroll-feed` and `livetable/windows` to `style/tokens/color`, then wrote 23 tests. In a real browser it signed in two users side by side to watch likes, comments and the badge arrive live, and checked five pages at phone width and the app in dark mode.
+
+Start in `app/pages/home/services.ts`.
+
 ## Demo accounts
 
 The seed creates eight people who all follow each other, fifty photo posts,
