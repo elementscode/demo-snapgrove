@@ -29,12 +29,12 @@ Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes a
 
 ### What Elements gave the app
 
-- **A live, paged feed.** `feedPosts` in `app/pages/home/services.ts` is a LiveTable partitioned by viewer. Its select pages with a keyset window, so the home feed loads six posts at a time as you scroll.
-- **Live comments and notifications.** `comments` in `app/pages/post/services.ts` is a LiveTable, so a comment appears on every open copy of the post as it is written. `notifications` in `app/shared/services/notifications.ts` is a LiveTable fed by database triggers on likes, comments and follows, which keeps the badge current.
-- **Live counts.** A `postStats` channel in `app/shared/services/posts.ts` pushes each post's like and comment counts to every page showing it. `setLiked` takes the state the viewer wants, so a double click lands in the same place.
-- **Uploads as function calls.** The new post page calls `createPost` in `app/shared/services/uploads.ts`, an `@rpc` that takes the photo as a `File` and stores it in an `images` table. `app/routes/images.ts` serves each image under its content hash with a year-long cache.
-- **Data from SQL files.** Two migrations define the schema and its triggers, then seed eight friends who follow each other, 50 photo posts, 209 likes, 88 comments and a few unread notifications each. The seed photos are image assets imported in `app/shared/services/photos.ts`.
-- **Sessions.** Every rpc that changes a user's data starts with `session.isLoggedInOrThrow()`, and the author of a comment is always the signed-in user.
+- **A feed that keeps scrolling.** The home feed is a LiveTable for each reader, read with a keyset window, so it loads six posts at a time as you scroll.
+- **Live comments and notifications.** Comments and notifications are LiveTables. A comment appears on every open copy of the post as it is written, and database triggers on likes, comments and follows fill the notification badge.
+- **Live counts.** A channel pushes each post's like and comment counts to every page showing it.
+- **Photo uploads as function calls.** The new post page sends the photo to an `@rpc` as a `File`, the app stores it in the database, and a route serves each image under its content hash with a year-long cache.
+- **Data from SQL files.** Two migrations define the schema and its triggers, then seed eight friends who follow each other, 50 photo posts, 209 likes, 88 comments and a few unread notifications each, with the seed photos shipped as image assets.
+- **Sessions.** Every change runs as the signed-in user, so a like or a comment always carries the right name.
 
 ### What the project server gave the agent
 
@@ -43,8 +43,6 @@ The project server runs alongside the agent and answers as soon as a file is sav
 ### What shipped
 
 The app type-checks with zero errors and all 23 tests pass. Every page works on desktop and phone, and live updates arrive across tabs, such as likes, comments and the notification badge.
-
-Start in `app/pages/home/services.ts`.
 
 ## Demo accounts
 
