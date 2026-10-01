@@ -42,7 +42,7 @@ The project server runs alongside the agent and answers as soon as a file is sav
 
 ### What shipped
 
-The app type-checks with zero errors and all 23 tests pass. During the build the agent signed in two users side by side and watched likes, comments and the badge arrive live. Every page was checked on desktop and phone before publishing, and the repo was installed fresh from GitHub and run before the demo went live.
+The app type-checks with zero errors and all 23 tests pass. During the build the agent signed in two users side by side and watched likes, comments and the badge arrive live. Every page was checked on desktop and phone before publishing.
 
 Start in `app/pages/home/services.ts`.
 
