@@ -36,9 +36,13 @@ Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes a
 - **Data from SQL files.** Two migrations define the schema and its triggers, then seed eight friends who follow each other, 50 photo posts, 209 likes, 88 comments and a few unread notifications each. The seed photos are image assets imported in `app/shared/services/photos.ts`.
 - **Sessions.** Every rpc that changes a user's data starts with `session.isLoggedInOrThrow()`, and the author of a comment is always the signed-in user.
 
-### What the agent got from the tooling
+### What the project server gave the agent
 
-The agent ran 24 builds in 23 minutes, and every one passed. It checked its work after each edit and kept going. The agent read the manual for each part as it reached it, 47 pages from `recipes/infinite-scroll-feed` and `livetable/windows` to `style/tokens/color`, then wrote 23 tests. In a real browser it signed in two users side by side to watch likes, comments and the badge arrive live, and checked five pages at phone width and the app in dark mode.
+The project server runs alongside the agent and answers as soon as a file is saved: it type-checks the templates, TypeScript and SQL, applies migrations and reruns the tests, so every question came back right away and the agent kept building.
+
+### What shipped
+
+The app type-checks with zero errors and all 23 tests pass. During the build the agent signed in two users side by side and watched likes, comments and the badge arrive live. Every page was checked on desktop and phone before publishing, and the repo was installed fresh from GitHub and run before the demo went live.
 
 Start in `app/pages/home/services.ts`.
 
