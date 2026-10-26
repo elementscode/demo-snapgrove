@@ -1,30 +1,16 @@
-![Snapgrove, a photo sharing app built with Elements: a snowy mountain photo with its comment thread, a comment arriving live, likes, and more photos from the same person.](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b/poster?v=7ff91a8af400)
+![Photo sharing with a live feed, built by Claude Code on Elements: a snowy mountain photo with its comment thread, a comment arriving live, likes, and more photos from the same person.](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b/poster?v=7ff91a8af400)
 
-# Snapgrove
+# Photo sharing with a live feed, built by Claude Code on Elements
 
-> A demo app built with [Elements](https://elements.dev).
+> Snapgrove is a full-stack app built with Claude Code on Elements.
 
 Profiles with a grid of photos, follows, a home feed that keeps scrolling, likes and comments that update live, notifications, and an explore page.
 
-**Demo:** [Snapgrove](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b)
-
-## Agent specs
-
-- **Agent:** Claude Code, Opus 5.5 Medium
-- **Time:** 23 min
-- **Cost:** $6.79 at API rates, September 2026
-
-## Get started
-
-```bash
-elements create snapgrove -scaffold=elementscode/demo-snapgrove
-```
+[Run this app on your machine](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b). Use this demo as inspiration, or as the starting point for your own app. Your agent creates a new app with this one as the scaffold, and you prompt it to add whatever features you want.
 
 ## How it's built
 
 Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes and comments that show up on every open copy of a post, and a notification badge that fills in on its own. Each of those is a part of Elements, so the agent spent its 23 minutes on the app itself.
-
-### What Elements gave the app
 
 - **A feed that keeps scrolling.** The home feed is a LiveTable for each reader, read with a keyset window, so it loads six posts at a time as you scroll.
 
@@ -38,36 +24,6 @@ Snapgrove needed photo uploads, a feed that keeps loading as you scroll, likes a
 
 - **Sessions.** Every change runs as the signed-in user, so a like or a comment always carries the right name.
 
-### What the project server gave the agent
+## Why Elements
 
-The project server runs alongside the agent and answers as soon as a file is saved: it type-checks the templates, TypeScript and SQL, applies migrations and reruns the tests, so every question came back right away and the agent kept building.
-
-### What shipped
-
-The app type-checks with zero errors and all 23 tests pass. Every page works on desktop and phone, and live updates arrive across tabs, such as likes, comments and the notification badge.
-
-## Demo accounts
-
-The seed creates eight people who all follow each other, fifty photo posts,
-likes, comments, and a few unread notifications for each account. Every
-account's password is `snapgrove`, and the sign-in page lists them.
-
-| Email                | Name           |
-| -------------------- | -------------- |
-| maya@snapgrove.dev   | Maya Okafor    |
-| theo@snapgrove.dev   | Theo Lindqvist |
-| priya@snapgrove.dev  | Priya Raman    |
-| jonas@snapgrove.dev  | Jonas Weber    |
-| lena@snapgrove.dev   | Lena Park      |
-| sam@snapgrove.dev    | Sam Rivera     |
-| ada@snapgrove.dev    | Ada Mensah     |
-| kai@snapgrove.dev    | Kai Nakamura   |
-
-The seed photos and avatars in `app/shared/assets/seed/` are CC0 photos from
-StockSnap, cropped and compressed.
-
-**Demo:** [Snapgrove](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b)
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+Elements is an integrated full-stack app framework and a project server. The project server checks the agent's work as it builds: it type-checks the server and browser code, analyzes the program, applies migrations and runs the tests, then reports the results to the agent. A security mistake, such as calling a server-only function from the browser, is a compile error. The agent reads the report and fixes its own mistakes before it tells you a feature is done. The same checks run on every feature you ask for next.
