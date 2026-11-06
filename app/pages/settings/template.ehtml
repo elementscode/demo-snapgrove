@@ -7,6 +7,11 @@ import { updateProfile, ProfileForm, MAX_BIO } from "#app/shared/services/upload
 import { previewUrl } from "#app/shared/services/preview";
 import { Layout } from "#app/shared/templates/layout";
 import { Avatar } from "#app/shared/templates/avatar";
+import { Alert } from "@elements/ui/alert";
+import { Button } from "@elements/ui/button";
+import { Field } from "@elements/ui/field";
+import { Input } from "@elements/ui/input";
+import { Textarea } from "@elements/ui/textarea";
 
 interface Settings {
   form: ProfileForm;
@@ -43,7 +48,7 @@ function onSubmit(me: Me, state: Settings) {
       <form class="settings stack is-lg" onsubmit={() => onSubmit(me, state)}>
         <h1 class="text-2xl">Edit profile</h1>
 
-        <p e:if={state.error} class="callout is-danger" role="alert">{state.error}</p>
+        <Alert e:if={state.error} variant="danger" description={state.error}/>
 
         <div class="settings-avatar">
           <Avatar user={me} size={88} src={previewUrl(state.form.avatar)}/>
@@ -57,20 +62,17 @@ function onSubmit(me: Me, state: Settings) {
           </div>
         </div>
 
-        <div class="field">
-          <label for="name">Name</label>
-          <input id="name" name="name" value={state.form.name} maxlength={60} autocomplete="name">
-        </div>
+        <Field label="Name" reserveError={false}>
+          <Input name="name" value={state.form.name} attrs={{ maxlength: 60, autocomplete: "name" }}/>
+        </Field>
 
-        <div class="field">
-          <label for="bio">Bio</label>
-          <textarea id="bio" name="bio" rows={3} maxlength={MAX_BIO} value={state.form.bio} placeholder="A line or two about you and what you shoot"></textarea>
-          <p class="hint">{state.form.bio.length} / {MAX_BIO}</p>
-        </div>
+        <Field label="Bio" description={`${state.form.bio.length} / ${MAX_BIO}`}>
+          <Textarea name="bio" rows={3} maxlength={MAX_BIO} value={state.form.bio} placeholder="A line or two about you and what you shoot"/>
+        </Field>
 
         <div class="settings-actions">
-          <a class="button is-ghost" href={`/u/${me.handle}`}>Cancel</a>
-          <button type="submit" class={["is-primary", state.busy && "is-loading"]}>Save</button>
+          <Button variant="ghost" href={`/u/${me.handle}`}>Cancel</Button>
+          <Button type="submit" variant="primary" loading={state.busy}>Save</Button>
         </div>
       </form>
     </Layout>

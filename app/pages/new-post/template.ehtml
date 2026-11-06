@@ -7,6 +7,10 @@ import { createPost, PostForm, MAX_CAPTION } from "#app/shared/services/uploads"
 import { previewUrl } from "#app/shared/services/preview";
 import { Layout } from "#app/shared/templates/layout";
 import { Icon } from "#app/shared/templates/icon";
+import { Alert } from "@elements/ui/alert";
+import { Button } from "@elements/ui/button";
+import { Field } from "@elements/ui/field";
+import { Textarea } from "@elements/ui/textarea";
 
 interface Compose {
   form: PostForm;
@@ -47,7 +51,7 @@ function onSubmit(state: Compose) {
       <form class="compose stack is-lg" onsubmit={() => onSubmit(state)}>
         <h1 class="text-2xl">New post</h1>
 
-        <p e:if={state.error} class="callout is-danger" role="alert">{state.error}</p>
+        <Alert e:if={state.error} variant="danger" description={state.error}/>
 
         <label class={["compose-drop", previewUrl(state.form.photo) && "has-photo"]}>
           <img e:if={previewUrl(state.form.photo)} src={previewUrl(state.form.photo)} alt="your photo" width="600" height="600">
@@ -63,13 +67,11 @@ function onSubmit(state: Compose) {
           <input type="file" name="photo" accept="image/png,image/jpeg,image/gif,image/webp" value={state.form.photo} aria-label="photo">
         </label>
 
-        <div class="field">
-          <label for="caption">Caption</label>
-          <textarea id="caption" name="caption" rows={3} maxlength={MAX_CAPTION} value={state.form.caption} placeholder="Say something about it…"></textarea>
-          <div class="compose-count">{state.form.caption.length} / {MAX_CAPTION}</div>
-        </div>
+        <Field label="Caption" description={`${state.form.caption.length} / ${MAX_CAPTION}`}>
+          <Textarea name="caption" rows={3} maxlength={MAX_CAPTION} value={state.form.caption} placeholder="Say something about it…"/>
+        </Field>
 
-        <button type="submit" class={["is-primary is-lg is-block", state.busy && "is-loading"]} disabled={!state.form.photo}>Share</button>
+        <Button type="submit" variant="primary" size="lg" block={true} loading={state.busy} disabled={!state.form.photo}>Share</Button>
       </form>
     </Layout>
   </body>
