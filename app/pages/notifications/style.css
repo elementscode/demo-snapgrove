@@ -88,9 +88,4 @@
   justify-content: center;
 }
 
-.notes-empty {
-  text-align: center;
-  color: var(--ink-soft);
-  padding: var(--space-12) var(--space-4);
-}
 

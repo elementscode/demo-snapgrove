@@ -12,6 +12,8 @@ import { Icon } from "#app/shared/templates/icon";
 import { Avatar, AvatarUser } from "#app/shared/templates/avatar";
 import { PostGrid } from "#app/shared/templates/post-grid";
 import { applyStats } from "#app/shared/templates/post-card";
+import { Button } from "@elements/ui/button";
+import { Empty, EmptyContent } from "@elements/ui/empty";
 
 export interface Profile extends AvatarUser {
   id: string;
@@ -75,19 +77,19 @@ function followLabel(profile: Profile): string {
               <h1>{profile.handle}</h1>
 
               <div e:if={profile.id === me.id} class="cluster is-sm">
-                <a class="button is-sm" href="/settings">Edit profile</a>
-                <button type="button" class="is-sm is-ghost" onclick={() => onSignoutClick()}>
+                <Button size="sm" href="/settings">Edit profile</Button>
+                <Button size="sm" variant="ghost" onclick={() => onSignoutClick()}>
                   <Icon name="logout" size={16}/> Sign out
-                </button>
+                </Button>
               </div>
 
-              <button e:else
-                      type="button"
-                      class={["is-sm", !profile.followedByMe && "is-primary"]}
-                      aria-pressed={profile.followedByMe}
+              <Button e:else
+                      size="sm"
+                      variant={profile.followedByMe ? "outline" : "primary"}
+                      attrs={{ "aria-pressed": profile.followedByMe ? "true" : "false" }}
                       onclick={() => onFollowClick(profile)}>
                 {followLabel(profile)}
-              </button>
+              </Button>
             </div>
 
             <ul class="profile-counts">
@@ -107,12 +109,13 @@ function followLabel(profile: Profile): string {
 
         <PostGrid e:if={posts.length > 0} {posts}/>
 
-        <div e:elseif={profile.id === me.id} class="profile-empty stack">
-          <p>Share your first photo and it shows up here.</p>
-          <p><a class="button is-primary" href="/new">New post</a></p>
-        </div>
+        <Empty e:elseif={profile.id === me.id} description="Share your first photo and it shows up here.">
+          <EmptyContent>
+            <Button variant="primary" href="/new">New post</Button>
+          </EmptyContent>
+        </Empty>
 
-        <p e:else class="profile-empty">{profile.handle} hasn't posted yet.</p>
+        <Empty e:else description={`${profile.handle} hasn't posted yet.`}/>
       </div>
     </Layout>
   </body>

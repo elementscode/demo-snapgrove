@@ -9,6 +9,8 @@ import { Layout } from "#app/shared/templates/layout";
 import { Icon } from "#app/shared/templates/icon";
 import { Avatar } from "#app/shared/templates/avatar";
 import { AvatarBadge, AvatarBadgeTone } from "@elements/ui/avatar";
+import { Button } from "@elements/ui/button";
+import { Empty } from "@elements/ui/empty";
 
 function href(n: Note): string {
   return n.kind === "follow" ? `/u/${n.handle}` : `/p/${n.postId}`;
@@ -99,12 +101,10 @@ function onNoteInsert(notes: LiveView<Note>, timer: { id: number }) {
           </li>
         </ul>
 
-        <p e:else class="notes-empty">
-          Nothing yet. When someone follows you, or likes or comments on your photos, it shows up here.
-        </p>
+        <Empty e:else description="Nothing yet. When someone follows you, or likes or comments on your photos, it shows up here."/>
 
         <div e:if={notes.hasMore} class="notes-more">
-          <button type="button" onclick={() => notes.more()}>Show older</button>
+          <Button onclick={() => notes.more()}>Show older</Button>
         </div>
       </div>
     </Layout>
