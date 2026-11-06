@@ -43,7 +43,7 @@ function onPhotoDblClick(post: Post, burst: { n: number }) {
 <LikeButton (post: Post, size: number = 26)>
   <Button variant="ghost"
           icon={true}
-          class={post.likedByMe ? "post-action like-button is-liked" : "post-action like-button"}
+          class={post.likedByMe ? "post-action is-bare like-button is-liked" : "post-action is-bare like-button"}
           label={post.likedByMe ? "unlike" : "like"}
           attrs={{ "aria-pressed": post.likedByMe ? "true" : "false" }}
           onclick={() => onLikeClick(post)}>
@@ -76,7 +76,7 @@ function onPhotoDblClick(post: Post, burst: { n: number }) {
     <div class="post-body stack is-xs">
       <div class="post-actions">
         <LikeButton {post}/>
-        <Button variant="ghost" icon={true} class="post-action" href={`/p/${post.id}`} label="comments">
+        <Button variant="ghost" icon={true} class="post-action is-bare" href={`/p/${post.id}`} label="comments">
           <Icon name="comment" size={25}/>
         </Button>
       </div>
