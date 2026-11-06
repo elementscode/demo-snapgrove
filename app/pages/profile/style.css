@@ -90,8 +90,7 @@
   }
 
   .profile-avatar .avatar {
-    width: 86px !important;
-    height: 86px !important;
+    --avatar-size: 86px !important;
   }
 
   .profile-counts {

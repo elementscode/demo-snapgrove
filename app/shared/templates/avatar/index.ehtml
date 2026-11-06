@@ -1,4 +1,4 @@
-import "./style.css";
+import { Avatar as PhotoAvatar } from "@elements/ui/avatar";
 import { avatarUrl, AvatarRef } from "#app/shared/services/photos";
 
 export interface AvatarUser extends AvatarRef {
@@ -11,15 +11,13 @@ function initial(u: AvatarUser): string {
   return (u.name || u.handle || "?").charAt(0).toUpperCase();
 }
 
-<Avatar (user: AvatarUser, size: number = 32)>
-  <span class="avatar"
-        style={`width:${size}px;height:${size}px;font-size:${Math.round(size * 0.42)}px`}>
-    <img e:if={user.avatarUrl || avatarUrl(user)}
-         src={user.avatarUrl || avatarUrl(user)}
-         alt=""
-         width={size}
-         height={size}
-         loading="lazy">
-    <span e:else aria-hidden="true">{initial(user)}</span>
-  </span>
+// A user's photo at any pixel size, with their initial while it loads or
+// when they have none. `src` shows a photo in place of theirs (a preview).
+<Avatar (user: AvatarUser, size: number = 32, src: string = "")>
+  <PhotoAvatar src={src || user.avatarUrl || avatarUrl(user)}
+               fallback={initial(user)}
+               lazy={true}
+               attrs={{ style: `--avatar-size:${size}px` }}>
+    <slot/>
+  </PhotoAvatar>
 </Avatar>

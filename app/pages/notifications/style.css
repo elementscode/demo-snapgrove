@@ -34,33 +34,7 @@
 }
 
 .note-avatar {
-  position: relative;
   flex: none;
-}
-
-.note-kind {
-  position: absolute;
-  right: -3px;
-  bottom: -3px;
-  display: grid;
-  place-items: center;
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 50%;
-  color: #fff;
-  box-shadow: 0 0 0 2px var(--bg);
-}
-
-.note-kind.is-like {
-  background: var(--danger);
-}
-
-.note-kind.is-comment {
-  background: var(--accent);
-}
-
-.note-kind.is-follow {
-  background: var(--ink);
 }
 
 .note-text {

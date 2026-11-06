@@ -8,6 +8,7 @@ import { timeAgo } from "#app/shared/services/format";
 import { Layout } from "#app/shared/templates/layout";
 import { Icon } from "#app/shared/templates/icon";
 import { Avatar } from "#app/shared/templates/avatar";
+import { AvatarBadge, AvatarBadgeTone } from "@elements/ui/avatar";
 
 function href(n: Note): string {
   return n.kind === "follow" ? `/u/${n.handle}` : `/p/${n.postId}`;
@@ -23,6 +24,19 @@ function verb(n: Note): string {
 
     default:
       return "started following you.";
+  }
+}
+
+function tone(n: Note): AvatarBadgeTone {
+  switch (n.kind) {
+    case "like":
+      return "danger";
+
+    case "comment":
+      return "accent";
+
+    default:
+      return "muted";
   }
 }
 
@@ -42,12 +56,13 @@ function onNoteInsert(notes: LiveView<Note>, timer: { id: number }) {
 
 <NoteBody (n: Note)>
     <a class="note-avatar" href={`/u/${n.handle}`} aria-hidden="true" tabindex={-1}>
-      <Avatar user={n} size={44}/>
-      <span class={["note-kind", `is-${n.kind}`]}>
-        <Icon e:if={n.kind === "like"} name="heart" size={11} filled={true}/>
-        <Icon e:elseif={n.kind === "comment"} name="comment" size={11} filled={true}/>
-        <Icon e:else name="plus" size={11}/>
-      </span>
+      <Avatar user={n} size={44}>
+        <AvatarBadge tone={tone(n)}>
+          <Icon e:if={n.kind === "like"} name="heart" size={11} filled={true}/>
+          <Icon e:elseif={n.kind === "comment"} name="comment" size={11} filled={true}/>
+          <Icon e:else name="plus" size={11}/>
+        </AvatarBadge>
+      </Avatar>
     </a>
 
     <a class="note-text" href={href(n)}>

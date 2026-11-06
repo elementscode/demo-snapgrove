@@ -46,8 +46,7 @@ function onSubmit(me: Me, state: Settings) {
         <p e:if={state.error} class="callout is-danger" role="alert">{state.error}</p>
 
         <div class="settings-avatar">
-          <img e:if={previewUrl(state.form.avatar)} class="settings-preview" src={previewUrl(state.form.avatar)} alt="new avatar" width="88" height="88">
-          <Avatar e:else user={me} size={88}/>
+          <Avatar user={me} size={88} src={previewUrl(state.form.avatar)}/>
 
           <div class="stack is-xs">
             <strong>@{me.handle}</strong>
