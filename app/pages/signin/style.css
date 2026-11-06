@@ -7,7 +7,6 @@
 }
 
 .auth-mosaic {
-  position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(4, 1fr);
@@ -112,7 +111,6 @@
 }
 
 .auth-demo-list .button {
-  width: 100%;
   height: auto;
   justify-content: flex-start;
   text-align: left;
