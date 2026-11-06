@@ -4,6 +4,8 @@
 
 > Snapgrove is a full-stack app built with Claude Code on Elements.
 
+Snapgrove uses the `default` theme from @elements/ui.
+
 Profiles with a grid of photos, follows, a home feed that keeps scrolling, likes and comments that update live, notifications, and an explore page.
 
 [Run this app on your machine](https://elements.dev/demos/01a0f40c-730d-7aa6-bc9e-b238cdce284b). Use this demo as inspiration, or as the starting point for your own app. Your agent creates a new app with this one as the scaffold, and you prompt it to add whatever features you want.
