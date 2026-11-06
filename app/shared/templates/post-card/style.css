@@ -64,7 +64,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--white);
   pointer-events: none;
   filter: drop-shadow(0 4px 18px rgb(0 0 0 / 0.35));
   animation: post-burst 700ms var(--ease-out) forwards;
@@ -90,6 +90,7 @@
 }
 
 .post-action {
+  --icon-size: 1.625rem;
   color: var(--ink);
 }
 

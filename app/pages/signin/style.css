@@ -41,11 +41,11 @@
   left: var(--space-10);
   right: var(--space-10);
   bottom: var(--space-10);
-  color: #fff;
+  color: var(--white);
 }
 
 .auth-tagline h2 {
-  color: #fff;
+  color: var(--white);
   font-size: var(--text-4xl);
   letter-spacing: var(--tracking-tight);
   line-height: var(--leading-tight);
@@ -53,7 +53,7 @@
 }
 
 .auth-tagline p {
-  color: rgb(255 255 255 / 0.82);
+  color: color-mix(in oklch, var(--white) 82%, transparent);
   margin: var(--space-2) 0 0;
 }
 
@@ -111,7 +111,7 @@
   margin: 0;
 }
 
-.auth-demo-list button {
+.auth-demo-list .button {
   width: 100%;
   height: auto;
   justify-content: flex-start;
