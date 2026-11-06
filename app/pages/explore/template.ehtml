@@ -9,6 +9,7 @@ import { Layout } from "#app/shared/templates/layout";
 import { Avatar, AvatarUser } from "#app/shared/templates/avatar";
 import { PostGrid } from "#app/shared/templates/post-grid";
 import { applyStats } from "#app/shared/templates/post-card";
+import { Empty } from "@elements/ui/empty";
 
 export interface Person extends AvatarUser {
   id: string;
@@ -49,7 +50,7 @@ export interface Person extends AvatarUser {
           <PostGrid {posts}/>
         </div>
 
-        <p e:if={posts.length === 0} class="text-ink-soft">Nothing posted in the last two weeks yet.</p>
+        <Empty e:if={posts.length === 0} description="Nothing posted in the last two weeks yet."/>
       </div>
     </Layout>
   </body>

@@ -8,6 +8,9 @@ import { PostStats } from "#app/shared/services/posts";
 import { FeedPost } from "./services";
 import { Layout } from "#app/shared/templates/layout";
 import { PostCard, applyStats } from "#app/shared/templates/post-card";
+import { Button } from "@elements/ui/button";
+import { Empty, EmptyContent } from "@elements/ui/empty";
+import { Spinner } from "@elements/ui/spinner";
 
 function onSentinelInsert(el: Element, posts: LiveView<FeedPost>) {
   let observer = new IntersectionObserver((entries) => {
@@ -39,16 +42,19 @@ function onSentinelInsert(el: Element, posts: LiveView<FeedPost>) {
           </li>
         </ul>
 
-        <div e:else class="feed-empty stack">
-          <h1 class="text-2xl">Your feed is quiet</h1>
-          <p class="text-ink-soft">Follow a few people and their photos land here, newest first.</p>
-          <p><a class="button is-primary" href="/explore">Explore popular posts</a></p>
-        </div>
+        <Empty e:else
+               level={1}
+               title="Your feed is quiet"
+               description="Follow a few people and their photos land here, newest first.">
+          <EmptyContent>
+            <Button variant="primary" href="/explore">Explore popular posts</Button>
+          </EmptyContent>
+        </Empty>
 
         <div e:if={posts.hasMore}
              class="feed-loading"
              oninsert={(e) => onSentinelInsert(e.target, posts)}>
-          <span class="feed-spinner" aria-label="loading more posts"></span>
+          <Spinner label="loading more posts"/>
         </div>
 
         <p e:elseif={posts.length > 0} class="feed-end">You're all caught up.</p>
