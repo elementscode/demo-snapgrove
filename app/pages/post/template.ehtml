@@ -11,10 +11,16 @@ import { Layout } from "#app/shared/templates/layout";
 import { Avatar } from "#app/shared/templates/avatar";
 import { LikeButton, PostPhoto, applyStats } from "#app/shared/templates/post-card";
 import { PostGrid } from "#app/shared/templates/post-grid";
+import { Button } from "@elements/ui/button";
+import { Input } from "@elements/ui/input";
+import { Empty } from "@elements/ui/empty";
+import { toast } from "@elements/ui/toast";
+import {
+  AlertDialog, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
+} from "@elements/ui/alert-dialog";
 
 interface Draft {
   body: string;
-  error: string;
 }
 
 function onCommentSubmit(me: Me, thread: LiveView<Comment>, draft: Draft) {
@@ -22,8 +28,6 @@ function onCommentSubmit(me: Me, thread: LiveView<Comment>, draft: Draft) {
   if (!body) {
     return;
   }
-
-  draft.error = "";
 
   try {
     thread.insert(
@@ -38,7 +42,7 @@ function onCommentSubmit(me: Me, thread: LiveView<Comment>, draft: Draft) {
       () => draft.body = "",
     );
   } catch (err: any) {
-    draft.error = err.message;
+    toast.error(err.message);
   }
 }
 
@@ -59,11 +63,7 @@ function canDelete(c: Comment, me: Me, post: Post): boolean {
   return c.userId === me.id || post.userId === me.id;
 }
 
-function onDeleteClick(post: Post) {
-  if (!confirm("Delete this post? This can't be undone.")) {
-    return;
-  }
-
+function onDeleteConfirm(post: Post) {
   deletePost(post.id);
   redirect(`/u/${post.handle}`);
 }
@@ -84,12 +84,14 @@ function onDeleteClick(post: Post) {
         <a href={`/u/${c.handle}`}>{c.handle}</a>{c.body}
         <div class="comment-meta">
           <span>{timeAgo(c.createdAt)}</span>
-          <button e:if={canDelete(c, me, post)} type="button" class="is-bare" onclick={() => thread.delete(c)}>Delete</button>
+          <Button e:if={canDelete(c, me, post)} variant="link" onclick={() => thread.delete(c)}>Delete</Button>
         </div>
       </div>
     </li>
 
-    <li e:if={thread.length === 0} class="post-empty-thread">No comments yet. Start the conversation.</li>
+    <li e:if={thread.length === 0}>
+      <Empty description="No comments yet. Start the conversation."/>
+    </li>
   </ul>
 </Thread>
 
@@ -100,7 +102,7 @@ function onDeleteClick(post: Post) {
   post: Post,
   thread: LiveView<Comment>,
   more: Post[],
-  private draft: Draft = { body: "", error: "" },
+  private draft: Draft = { body: "" },
 ) oninit={() => stats.on("notify", (s) => applyStats([post, ...more], s))}>
   <head>
     <title>{post.caption ? `${post.handle}: ${post.caption}` : `Photo by ${post.handle}`} · snapgrove</title>
@@ -120,7 +122,15 @@ function onDeleteClick(post: Post) {
                 <a class="post-handle" href={`/u/${post.handle}`}>{post.handle}</a>
                 <span class="post-name">{post.name}</span>
               </div>
-              <button e:if={post.userId === me.id} type="button" class="is-ghost is-sm post-time" onclick={() => onDeleteClick(post)}>Delete</button>
+              <AlertDialog e:if={post.userId === me.id}
+                           title="Delete this post?"
+                           description="This can't be undone.">
+                <Button slot="trigger" variant="ghost" size="sm" class="post-time">Delete</Button>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction variant="danger" onclick={() => onDeleteConfirm(post)}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialog>
             </header>
 
             <Thread {post} {me} {thread}/>
@@ -134,15 +144,12 @@ function onDeleteClick(post: Post) {
             </div>
 
             <form class="comment-form" onsubmit={() => onCommentSubmit(me, thread, draft)}>
-              <input value={draft.body}
+              <Input value={draft.body}
                      name="comment"
-                     aria-label="Add a comment"
                      placeholder="Add a comment…"
-                     maxlength={MAX_COMMENT}
-                     autocomplete="off">
-              <button type="submit" class="is-primary" disabled={draft.body.trim() === ""}>Post</button>
+                     attrs={{ "aria-label": "Add a comment", maxlength: MAX_COMMENT, autocomplete: "off" }}/>
+              <Button type="submit" variant="primary" disabled={draft.body.trim() === ""}>Post</Button>
             </form>
-            <p e:if={draft.error} class="hint is-error" role="alert">{draft.error}</p>
           </div>
         </article>
 

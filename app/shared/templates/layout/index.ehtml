@@ -4,6 +4,7 @@ import { Me } from "#app/shared/services/auth";
 import { Note } from "#app/shared/services/notifications";
 import { Icon } from "#app/shared/templates/icon";
 import { Avatar } from "#app/shared/templates/avatar";
+import { Toaster } from "@elements/ui/toast";
 
 function unread(notes: LiveView<Note>): number {
   return notes.filter((n) => !n.readAt).length;
@@ -56,4 +57,6 @@ function badge(n: number): string {
   <main class="layout-main">
     <slot/>
   </main>
+
+  <Toaster/>
 </Layout>

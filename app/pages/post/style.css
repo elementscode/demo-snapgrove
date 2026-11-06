@@ -72,9 +72,7 @@
   margin-top: var(--space-0-5);
 }
 
-.comment-meta button {
-  height: auto;
-  padding: 0;
+.comment-meta .button {
   font-size: var(--text-xs);
   color: var(--ink-dim);
 }
@@ -103,13 +101,6 @@
 .comment-form input {
   flex: 1;
   min-width: 0;
-}
-
-.post-empty-thread {
-  color: var(--ink-dim);
-  font-size: var(--text-sm);
-  text-align: center;
-  padding: var(--space-8) 0;
 }
 
 .post-more-head {

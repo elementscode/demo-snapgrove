@@ -2,6 +2,7 @@ import "./style.css";
 import { Post, PostStats, setLiked } from "#app/shared/services/posts";
 import { photoUrl } from "#app/shared/services/photos";
 import { timeAgo, plural } from "#app/shared/services/format";
+import { Button } from "@elements/ui/button";
 import { Icon } from "#app/shared/templates/icon";
 import { Avatar } from "#app/shared/templates/avatar";
 
@@ -40,13 +41,14 @@ function onPhotoDblClick(post: Post, burst: { n: number }) {
 }
 
 <LikeButton (post: Post, size: number = 26)>
-  <button type="button"
-          class={["is-ghost is-icon post-action like-button", post.likedByMe && "is-liked"]}
-          aria-pressed={post.likedByMe}
-          aria-label={post.likedByMe ? "unlike" : "like"}
+  <Button variant="ghost"
+          icon={true}
+          class={post.likedByMe ? "post-action like-button is-liked" : "post-action like-button"}
+          label={post.likedByMe ? "unlike" : "like"}
+          attrs={{ "aria-pressed": post.likedByMe ? "true" : "false" }}
           onclick={() => onLikeClick(post)}>
     <Icon name="heart" size={size} filled={post.likedByMe}/>
-  </button>
+  </Button>
 </LikeButton>
 
 <PostPhoto (post: Post, private burst: { n: number } = { n: 0 })>
@@ -74,9 +76,9 @@ function onPhotoDblClick(post: Post, burst: { n: number }) {
     <div class="post-body stack is-xs">
       <div class="post-actions">
         <LikeButton {post}/>
-        <a class="button is-ghost is-icon post-action" href={`/p/${post.id}`} aria-label="comments">
+        <Button variant="ghost" icon={true} class="post-action" href={`/p/${post.id}`} label="comments">
           <Icon name="comment" size={25}/>
-        </a>
+        </Button>
       </div>
 
       <div class="post-likes">{plural(post.likeCount, "like")}</div>
